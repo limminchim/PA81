@@ -17,7 +17,12 @@ The data for this project comes from this [original source](http://groupware.les
 
 ## Objective
 
-* The goal of the project is to predict the manner in which participants did the exercise. This is the "classe" variable in the training set. 
+* The goal of this project is to predict the manner of performing unilateral dumbbell biceps curls based on data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. This is the "classes" variable in the training set. This is the "classe" variable in the training set. The 5 possible methods include:
+** A: exactly according to the specification
+** B: throwing the elbows to the front
+** C: lifting the dumbbell only halfway
+** D: lowering the dumbbell only halfway
+** E: throwing the hips to the front
 * This report will describe how I built the model, how I used cross validation,  the expected out-of-sample error and explain the choices made.
 * I will subsequently use the prediction model to predict 20 different test cases.
 
@@ -34,7 +39,7 @@ library(RColorBrewer)
 library(rattle)
 library(randomForest)
 
-set.seed(12345)
+set.seed(87654321)
 ```
 
 ## Getting the data
@@ -55,6 +60,8 @@ if (!file.exists("./data/pml-testing.csv")){
     }   
 # reads data into memory & replaces blanks with NA  
 testingAll <- read.csv("./data/pml-testing.csv", na.strings=c("NA","#DIV/0!",""))
+
+trainingAll$classe <- as.factor(trainingAll$classe)
 ```
 
 ## Partioning the training set into two
@@ -183,10 +190,9 @@ for (i in 1:length(testingAll) ) {
         }      
     }      
 }
-# NOTE: Row 2 to be removed
-# To ensure coersion works
+# NOTE: Row 2 is not useful, hence will be removed to ensure coersion works
 testing <- rbind(myTraining[2, -58] , testingAll)
-testingAll <- testingAll[-1,]
+testing <- testing[-1,]
 ```
 
 
@@ -217,43 +223,43 @@ confusionMatrix(predictionsA1, myTesting$classe)
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 2150   60    7    1    0
-##          B   61 1260   69   64    0
-##          C   21  188 1269  143    4
-##          D    0   10   14  857   78
-##          E    0    0    9  221 1360
+##          A 2155   75   10    1    0
+##          B   54 1235   77   61    0
+##          C   23  199 1257  138   55
+##          D    0    9   13  892   99
+##          E    0    0   11  194 1288
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.8789          
-##                  95% CI : (0.8715, 0.8861)
+##                Accuracy : 0.8701          
+##                  95% CI : (0.8625, 0.8775)
 ##     No Information Rate : 0.2845          
 ##     P-Value [Acc > NIR] : < 2.2e-16       
 ##                                           
-##                   Kappa : 0.8468          
+##                   Kappa : 0.8357          
 ##  Mcnemar's Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            0.9633   0.8300   0.9276   0.6664   0.9431
-## Specificity            0.9879   0.9693   0.9450   0.9845   0.9641
-## Pos Pred Value         0.9693   0.8666   0.7809   0.8936   0.8553
-## Neg Pred Value         0.9854   0.9596   0.9841   0.9377   0.9869
+## Sensitivity            0.9655   0.8136   0.9189   0.6936   0.8932
+## Specificity            0.9847   0.9697   0.9359   0.9816   0.9680
+## Pos Pred Value         0.9616   0.8655   0.7518   0.8806   0.8627
+## Neg Pred Value         0.9863   0.9559   0.9820   0.9423   0.9758
 ## Prevalence             0.2845   0.1935   0.1744   0.1639   0.1838
-## Detection Rate         0.2740   0.1606   0.1617   0.1092   0.1733
-## Detection Prevalence   0.2827   0.1853   0.2071   0.1222   0.2027
-## Balanced Accuracy      0.9756   0.8997   0.9363   0.8254   0.9536
+## Detection Rate         0.2747   0.1574   0.1602   0.1137   0.1642
+## Detection Prevalence   0.2856   0.1819   0.2131   0.1291   0.1903
+## Balanced Accuracy      0.9751   0.8916   0.9274   0.8376   0.9306
 ```
 
 ```r
 # Overall Statistics
-#               Accuracy : 0.8789          
-#                 95% CI : (0.8715, 0.8861)
+#               Accuracy : 0.8701          
+#                 95% CI : (0.8725, 0.8775)
 #    No Information Rate : 0.2845          
 #    P-Value [Acc > NIR] : < 2.2e-16
 
-#                  Kappa : 0.8468 
+#                  Kappa : 0.8357 
 # Mcnemar's Test P-Value : NA 
 ```
 
@@ -281,43 +287,43 @@ confusionMatrix(predictionsB1, myTesting$classe)
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 2231    2    0    0    0
-##          B    1 1516    2    0    0
-##          C    0    0 1366    3    0
-##          D    0    0    0 1282    2
-##          E    0    0    0    1 1440
+##          A 2231    1    0    0    0
+##          B    1 1515    3    0    0
+##          C    0    2 1362    1    0
+##          D    0    0    3 1285    2
+##          E    0    0    0    0 1440
 ## 
 ## Overall Statistics
 ##                                           
-##                Accuracy : 0.9986          
-##                  95% CI : (0.9975, 0.9993)
+##                Accuracy : 0.9983          
+##                  95% CI : (0.9972, 0.9991)
 ##     No Information Rate : 0.2845          
 ##     P-Value [Acc > NIR] : < 2.2e-16       
 ##                                           
-##                   Kappa : 0.9982          
+##                   Kappa : 0.9979          
 ##  Mcnemar's Test P-Value : NA              
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            0.9996   0.9987   0.9985   0.9969   0.9986
-## Specificity            0.9996   0.9995   0.9995   0.9997   0.9998
-## Pos Pred Value         0.9991   0.9980   0.9978   0.9984   0.9993
-## Neg Pred Value         0.9998   0.9997   0.9997   0.9994   0.9997
+## Sensitivity            0.9996   0.9980   0.9956   0.9992   0.9986
+## Specificity            0.9998   0.9994   0.9995   0.9992   1.0000
+## Pos Pred Value         0.9996   0.9974   0.9978   0.9961   1.0000
+## Neg Pred Value         0.9998   0.9995   0.9991   0.9998   0.9997
 ## Prevalence             0.2845   0.1935   0.1744   0.1639   0.1838
-## Detection Rate         0.2843   0.1932   0.1741   0.1634   0.1835
-## Detection Prevalence   0.2846   0.1936   0.1745   0.1637   0.1837
-## Balanced Accuracy      0.9996   0.9991   0.9990   0.9983   0.9992
+## Detection Rate         0.2843   0.1931   0.1736   0.1638   0.1835
+## Detection Prevalence   0.2845   0.1936   0.1740   0.1644   0.1835
+## Balanced Accuracy      0.9997   0.9987   0.9976   0.9992   0.9993
 ```
 
 ```r
 # Overall Statistics
-#              Accuracy : 0.9986          
-#                95% CI : (0.9975, 0.9993)
+#              Accuracy : 0.9983          
+#                95% CI : (0.9972, 0.9991)
 #   No Information Rate : 0.2845         
 #   P-Value [Acc > NIR] : < 2.2e-16  
 
-#                 Kappa : 0.9982         
+#                 Kappa : 0.9979         
 # Mcnemar's Test P-Value: NA 
 ```
 
@@ -328,6 +334,13 @@ For Random Forests we use the following formula, which gave a much better predic
 
 ```r
 predictionsB2 <- predict(modFitB1, testing, type = "class")
+predictionsB2
+```
+
+```
+## 22  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 
+##  B  A  B  A  A  E  D  B  A  A  B  C  B  A  E  E  A  B  B  B 
+## Levels: A B C D E
 ```
 
 Use provided function to generate files with the corresponding problem in the test data set.
@@ -337,7 +350,7 @@ These files are for the assignment submission.
 pml_write_files = function(x){
   n = length(x)
   for(i in 1:n){
-    filename = paste0("problem_id_",i,".txt")
+    filename = paste0("./results1/problem_id_",i,".txt")
     write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
   }
 }

@@ -26,7 +26,12 @@ The data for this project comes from this [original source](http://groupware.les
 
 ## Objective
 
-* The goal of the project is to predict the manner in which participants did the exercise. This is the "classe" variable in the training set. 
+* The goal of this project is to predict the manner of performing unilateral dumbbell biceps curls based on data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. This is the "classes" variable in the training set. This is the "classe" variable in the training set. The 5 possible methods include:
+** A: exactly according to the specification
+** B: throwing the elbows to the front
+** C: lifting the dumbbell only halfway
+** D: lowering the dumbbell only halfway
+** E: throwing the hips to the front
 * This report will describe how I built the model, how I used cross validation,  the expected out-of-sample error and explain the choices made.
 * I will subsequently use the prediction model to predict 20 different test cases.
 
@@ -42,7 +47,7 @@ library(RColorBrewer)
 library(rattle)
 library(randomForest)
 
-set.seed(12345)
+set.seed(87654321)
 ```
 
 ## Getting the data
@@ -62,6 +67,8 @@ if (!file.exists("./data/pml-testing.csv")){
     }   
 # reads data into memory & replaces blanks with NA  
 testingAll <- read.csv("./data/pml-testing.csv", na.strings=c("NA","#DIV/0!",""))
+
+trainingAll$classe <- as.factor(trainingAll$classe)
     
 ```
 
@@ -156,10 +163,9 @@ for (i in 1:length(testingAll) ) {
         }      
     }      
 }
-# NOTE: Row 2 to be removed
-# To ensure coersion works
+# NOTE: Row 2 is not useful, hence will be removed to ensure coersion works
 testing <- rbind(myTraining[2, -58] , testingAll)
-testingAll <- testingAll[-1,]
+testing <- testing[-1,]
 ```
 
 
@@ -179,12 +185,12 @@ Use Confusion Matrix to test results ...
 ```{r, echo=TRUE, fig.height=7, fig.width=7}
 confusionMatrix(predictionsA1, myTesting$classe)
 # Overall Statistics
-#               Accuracy : 0.8789          
-#                 95% CI : (0.8715, 0.8861)
+#               Accuracy : 0.8701          
+#                 95% CI : (0.8725, 0.8775)
 #    No Information Rate : 0.2845          
 #    P-Value [Acc > NIR] : < 2.2e-16
 
-#                  Kappa : 0.8468 
+#                  Kappa : 0.8357 
 # Mcnemar's Test P-Value : NA 
 ```
 
@@ -204,12 +210,12 @@ Use Confusion Matrix to test results ...
 ```{r, echo=TRUE, fig.height=7, fig.width=7}
 confusionMatrix(predictionsB1, myTesting$classe)
 # Overall Statistics
-#              Accuracy : 0.9986          
-#                95% CI : (0.9975, 0.9993)
+#              Accuracy : 0.9983          
+#                95% CI : (0.9972, 0.9991)
 #   No Information Rate : 0.2845         
 #   P-Value [Acc > NIR] : < 2.2e-16  
 
-#                 Kappa : 0.9982         
+#                 Kappa : 0.9979         
 # Mcnemar's Test P-Value: NA 
 ```
 
@@ -219,6 +225,7 @@ As can be observed, Random Forests produce better results.
 For Random Forests we use the following formula, which gave a much better prediction:
 ```{r, echo=TRUE, fig.height=7, fig.width=7}
 predictionsB2 <- predict(modFitB1, testing, type = "class")
+predictionsB2
 ```
 
 Use provided function to generate files with the corresponding problem in the test data set.
@@ -227,7 +234,7 @@ These files are for the assignment submission.
 pml_write_files = function(x){
   n = length(x)
   for(i in 1:n){
-    filename = paste0("problem_id_",i,".txt")
+    filename = paste0("./results1/problem_id_",i,".txt")
     write.table(x[i],file=filename,quote=FALSE,row.names=FALSE,col.names=FALSE)
   }
 }
