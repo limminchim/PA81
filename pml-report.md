@@ -1,6 +1,6 @@
 # Coursera Practical Machine Learning - Project Writeup
 Writeup by Lim Min Chim  
-20 Jun 2015  
+5 Aug 2015  
 
 ## Background
 
@@ -38,6 +38,7 @@ library(rpart.plot)
 library(RColorBrewer)
 library(rattle)
 library(randomForest)
+library(e1071)
 
 set.seed(87654321)
 ```
